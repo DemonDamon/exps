@@ -19,7 +19,7 @@
 
 &emsp;&emsp;论文通过**构造泊松方程求解像素最优值**的方法，来保留源域梯度信息，即根据指定的边界条件求解一个泊松方程，实现了梯度域上的连续，从而达到边界处的无缝融合。所谓无缝融合，即具体为区域内对象的纹理、照明、颜色、边界等无缝处理。
 ![](pic1.png)
-图中，$g$是源域中待融合部分， $\mathbf{v}$ 是 $g$ 的梯度向量场； $S$ 是融合后的图像； $Ω$ 是融合后目标域被覆盖的区域， $∂Ω$ 是该区域边界； $f$ 表示 $Ω$ 内的像素值（未知，待插值），用 $f^∗$ 表示 $Ω$ 外的像素值（已知，和目标域一致）。
+图中， $g$ 是源域中待融合部分， $\mathbf{v}$ 是 $g$ 的梯度向量场； $S$ 是融合后的图像； $Ω$ 是融合后目标域被覆盖的区域， $∂Ω$ 是该区域边界； $f$ 表示 $Ω$ 内的像素值（未知，待插值），用 $f^∗$ 表示 $Ω$ 外的像素值（已知，和目标域一致）。
 
 &emsp;&emsp;**融合后的图像应该尽量保持平滑，即没有明显边界**，所以$Ω$内的梯度值尽可能小，因此需求解下面最小化问题，<br>
 
@@ -27,52 +27,74 @@ $$\begin{equation}\begin{aligned}
 \underset{f}{min}\iint_{\Omega}|\nabla f|^2&ensp;with&ensp;f|_{\partial{\Omega}} = f^*|_{\partial{\Omega}}
 \end{aligned}\nonumber\end{equation}$$
 
-其中，$\nabla . = [\frac{\partial{.}}{\partial{x}}, \frac{\partial{.}}{\partial{y}}]$是梯度算子。显然这是一个**积分型极值**问题，需要使用**变分法**求解。令被积函数为
+其中， $\nabla . = [\frac{\partial{.}}{\partial{x}}, \frac{\partial{.}}{\partial{y}}]$ 是梯度算子。显然这是一个**积分型极值**问题，需要使用**变分法**求解。令被积函数为
+
 $$\begin{equation}\begin{aligned}
 F = |\nabla{f}|^2 = f_x^2 + f_y^2
 \end{aligned}\nonumber\end{equation}$$
+
 然后代入二维的Euler-Lagrange方程，
+
 $$\begin{equation}\begin{aligned}
 \frac{\partial{F}}{\partial{f}} - \frac{d}{dx}(\frac{\partial{F}}{\partial{f_x}}) - \frac{d}{dy}(\frac{\partial{F}}{\partial{f_y}}) = 0
 \end{aligned}\nonumber\end{equation}$$
-可见$F$不包含$f$，因此$\frac{\partial{F}}{\partial{f}}=0$，所以我们有，
+
+可见 $F$ 不包含 $f$ ，因此 $\frac{\partial{F}}{\partial{f}}=0$ ，所以我们有，
+
 $$\begin{equation}\begin{aligned}
 \frac{d}{dx}(\frac{\partial{F}}{\partial{f_x}}) + \frac{d}{dy}(\frac{\partial{F}}{\partial{f_y}}) = 0
 \end{aligned}\nonumber\end{equation}$$
+
 $$\begin{equation}\begin{aligned}
 \frac{d}{dx}(f_x) + \frac{d}{dy}(f_y) = 0
 \end{aligned}\nonumber\end{equation}$$
+
 $$\begin{equation}\begin{aligned}
 \frac{\partial^2{f}}{\partial{x^2}} + \frac{\partial^2{f}}{\partial{y^2}}= 0
 \end{aligned}\nonumber\end{equation}$$
+
 因此该问题的解是
+
 $$\begin{equation}\begin{aligned}
 \Delta{f} = 0 &ensp; over &ensp; \Omega &ensp; with&ensp;  f|_{\partial{\Omega}} = f^*|_{\partial{\Omega}}
 \end{aligned}\nonumber\end{equation}$$
-其中$\Delta . = \frac{\partial^2{.}}{\partial{x^2}} + \frac{\partial^2{.}}{\partial{y^2}}$是拉普拉斯算子。到此，依然得不到满足的效果，我们需要进一步引入约束，即通过源域中待融合区域$g$的梯度向量场$\mathbf{v}$作为求解式子的引导场，**目的就是为了使得$\Omega$中的像素值$f$的梯度不断接近$g$的梯度，可以更好的保留源域$g$的纹理，$S$的梯度域也不断变得连续、平滑、无明显的边界**。具体通过求解下述最小化问题，
+
+其中 $\Delta . = \frac{\partial^2{.}}{\partial{x^2}} + \frac{\partial^2{.}}{\partial{y^2}}$ 是拉普拉斯算子。到此，依然得不到满足的效果，我们需要进一步引入约束，即通过源域中待融合区域 $g$ 的梯度向量场 $\mathbf{v}$ 作为求解式子的引导场，**目的就是为了使得 $\Omega$ 中的像素值 $f$ 的梯度不断接近 $g$ 的梯度，可以更好的保留源域 $g$ 的纹理， $S$ 的梯度域也不断变得连续、平滑、无明显的边界**。具体通过求解下述最小化问题，
+
 $$\begin{equation}\begin{aligned}
 \underset{f}{min}\iint_{\Omega}|\nabla f - \mathbf{v}|^2&ensp;with&ensp;f|_{\partial{\Omega}} = f^*|_{\partial{\Omega}}
 \end{aligned}\nonumber\end{equation}$$
-$\mathbf{v}=(u, v)$是$g$的梯度场，因此上式子可以写成，
+
+ $\mathbf{v}=(u, v)$ 是 $g$ 的梯度场，因此上式子可以写成，
+ 
 $$\begin{equation}\begin{aligned}
 &\underset{f}{min}\iint_{\Omega}|\nabla f - \mathbf{v}|^2 \\&= \underset{f}{min}\iint_{\Omega}|\nabla f - \nabla g|^2 \\&= \underset{f}{min}\iint_{\Omega}[(f_x-g_x)^2+(f_y-g_y)^2]\\&s.t.&ensp;f|_{\partial{\Omega}} = f^*|_{\partial{\Omega}}
 \end{aligned}\nonumber\end{equation}$$
-令$F=(f_x-g_x)^2+(f_y-g_y)^2$，再应用Euler-Lagrange方程，
+
+令 $F=(f_x-g_x)^2+(f_y-g_y)^2$ ，再应用Euler-Lagrange方程，
+
 $$\begin{equation}\begin{aligned}
 \frac{d}{dx}(\frac{\partial{F}}{\partial{(f_x-g_x)^2}}) + \frac{d}{dy}(\frac{\partial{F}}{\partial{(f_y-g_y)^2}}) = 0
 \end{aligned}\nonumber\end{equation}$$
+
 $$\begin{equation}\begin{aligned}
-\frac{d}{dx}[2(f_x-g_x)] + \frac{d}{dy}[2(f_y-g_y)] = 0\end{aligned}\nonumber\end{equation}$$
+\frac{d}{dx}[2(f_x-g_x)] + \frac{d}{dy}[2(f_y-g_y)] = 0
+\end{aligned}\nonumber\end{equation}$$
+
 $$\begin{equation}\begin{aligned}
 \frac{\partial^2{f}}{\partial{x^2}} + \frac{\partial^2{f}}{\partial{y^2}} = \frac{\partial^2{g}}{\partial{x^2}} + \frac{\partial^2{g}}{\partial{y^2}}
 \end{aligned}\nonumber\end{equation}$$
+
 $$\begin{equation}\begin{aligned}
 \Delta f = \Delta g = \mathrm{div}\mathbf{v}
 \end{aligned}\nonumber\end{equation}$$
+
 可见该问题的解，
+
 $$\begin{equation}\begin{aligned}
 \Delta f = \mathrm{div}\mathbf{v}&ensp;over&ensp;\Omega&ensp;with&ensp;f|_{\partial{\Omega}} = f^*|_{\partial{\Omega}}
 \end{aligned}\nonumber\end{equation}$$
+
 该解是**具有狄利克雷边界条件的唯一解**。
 
 🚀 简要提炼重要信息：<br>
@@ -88,17 +110,23 @@ $$\begin{equation}\begin{aligned}
 ## Python实现
 
 在偏微分方程数值求解里面，有相应的离散化公式，
+
 $$\begin{equation}\begin{aligned}
 \frac{\partial^2{f}}{\partial{x^2}} = f(x+1, y) + f(x-1, y) - 2f(x,y)
 \end{aligned}\nonumber\end{equation}$$
+
 $$\begin{equation}\begin{aligned}
 \frac{\partial^2{f}}{\partial{y^2}} = f(x, y+1) + f(x, y-1) - 2f(x,y)
 \end{aligned}\nonumber\end{equation}$$
+
 于是有，
+
 $$\begin{equation}\begin{aligned}
 \Delta{f} = f(x+1, y) + f(x-1, y) + f(x, y+1) + f(x, y-1) - 4f(x,y)=0
 \end{aligned}\nonumber\end{equation}$$
+
 也相当于使用拉普拉斯卷积核对图像进行处理，
+
 $$
 \left[
 \begin{matrix}
@@ -107,6 +135,7 @@ $$
 0 & 1 & 0 
 \end{matrix} \right]
 $$
+
 *  常规融合(Importing gradients)
 <img src=https://files.mdnice.com/user/9391/056f1caa-ede6-45d0-a469-0efadce8a6f6.png width="60%">
 <img src=https://files.mdnice.com/user/9391/0d2299f7-9536-401d-ad16-a83315170c2b.png width="50%">
