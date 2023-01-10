@@ -99,12 +99,12 @@ $$\begin{equation}\begin{aligned}
 
 🚀 简要提炼重要信息：<br>
 1. $\Omega$ 是指融合区域，即目标图像（目标域）中哪些区域是要被融合修改的
-2. $f$ 是指 $\Omega$ 区域内**融合后**的像素值；$f^*$ 是指 $\Omega$ 区域外**不作融合处理**的像素值，和目标域的像素一致
+2. $f$ 是指 $\Omega$ 区域内**融合后**的像素值； $f^*$ 是指 $\Omega$ 区域外**不作融合处理**的像素值，和目标域的像素一致
 3. $g$ 是源图像（源域）内对应 $\Omega$ 区域的像素值
 4. $\nabla . = [\frac{\partial{.}}{\partial{x}}, \frac{\partial{.}}{\partial{y}}]$ 是梯度算子，计算图像中每个像素点的梯度
 5. $\Delta . = \frac{\partial^2{.}}{\partial{x^2}} + \frac{\partial^2{.}}{\partial{y^2}}$ 是拉普拉斯算子，计算图像每个像素点的梯度的散度（divergence，即同一个方向进行两次梯度计算）
 6. $\mathbf{v}=[u,v]^\mathbf{T}=[\frac{\partial{g}}{\partial{x}}, \frac{\partial{g}}{\partial{y}}]^\mathbf{T}$ 是 $g$ 的梯度向量场
-7. $\mathrm{div}\mathbf{v}$ 是 $\mathbf{v}$ 的散度，$\mathrm{div}\mathbf{v}=\nabla·\mathbf{v}=[\frac{\partial{.}}{\partial{x}}, \frac{\partial{.}}{\partial{y}}]·[u,v]^\mathbf{T} = \frac{\partial{u}}{\partial{x}} + \frac{\partial{v}}{\partial{y}}=\frac{\partial^2{g}}{\partial{x^2}} + \frac{\partial^2{g}}{\partial{y^2}}$<br>（注意：散度是标量）
+7. $\mathrm{div}\mathbf{v}$ 是 $\mathbf{v}$ 的散度， $\mathrm{div}\mathbf{v}=\nabla·\mathbf{v}=[\frac{\partial{.}}{\partial{x}}, \frac{\partial{.}}{\partial{y}}]·[u,v]^\mathbf{T} = \frac{\partial{u}}{\partial{x}} + \frac{\partial{v}}{\partial{y}}=\frac{\partial^2{g}}{\partial{x^2}} + \frac{\partial^2{g}}{\partial{y^2}}$ <br>（注意：散度是标量）
 7. $\Delta f = \Delta g = \mathrm{div}\mathbf{v} $
 
 ## Python实现
